@@ -1,43 +1,48 @@
 const User = require("../models/userModel");
-const bcrypt = require("bcrypt");
 
 module.exports.login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, email } = req.body;
     const user = await User.findOne({ username });
-    if (!user)
-      return res.json({ msg: "Incorrect Username or Password", status: false });
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid)
-      return res.json({ msg: "Incorrect Username or Password", status: false });
-    delete user.password;
-    return res.json({ status: true, user });
+    const emailCheck = await User.findOne({ email });
+    if (user && emailCheck) {
+      return res.json({ status: true, user });
+    } else if (user) {
+      return res.json({
+        status: false,
+        msg: "Usuário encontrado não confere com o email informado",
+      });
+    } else if (emailCheck) {
+      return res.json({
+        status: false,
+        msg: "Email encontrado não confere com o usuário informado",
+      });
+    } else {
+      const user = await User.create({
+        email,
+        username,
+      });
+      return res.json({ status: true, user });
+    }
   } catch (ex) {
     next(ex);
   }
+  // try {
+  //   const { username, email } = req.body;
+  //   const user = await User.findOne({ username });
+  //   if (!user)
+  //     return res.json({ msg: "Incorrect Username or Password", status: false });
+  //   // const isPasswordValid = await bcrypt.compare(password, user.password);
+  //   if (!isPasswordValid)
+  //     return res.json({ msg: "Incorrect Username or Password", status: false });
+  //   delete user.password;
+  //   return res.json({ status: true, user });
+  // } catch (ex) {
+  //   next(ex);
+  // }
 };
 
-module.exports.register = async (req, res, next) => {
-  try {
-    const { username, email, password } = req.body;
-    const usernameCheck = await User.findOne({ username });
-    if (usernameCheck)
-      return res.json({ msg: "Username already used", status: false });
-    const emailCheck = await User.findOne({ email });
-    if (emailCheck)
-      return res.json({ msg: "Email already used", status: false });
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
-      email,
-      username,
-      password: hashedPassword,
-    });
-    delete user.password;
-    return res.json({ status: true, user });
-  } catch (ex) {
-    next(ex);
-  }
-};
+// module.exports.register = async (req, res, next) => {};
 
 module.exports.getAllUsers = async (req, res, next) => {
   try {
@@ -46,7 +51,9 @@ module.exports.getAllUsers = async (req, res, next) => {
       "username",
       "avatarImage",
       "_id",
+      "admin",
     ]);
+    // console.log(users);
     return res.json(users);
   } catch (ex) {
     next(ex);
@@ -83,3 +90,13 @@ module.exports.logOut = (req, res, next) => {
     next(ex);
   }
 };
+
+// module.exports.logOut = (req, res, next) => {
+//   try {
+//     if (!req.params.id) return res.json({ msg: "User id is required " });
+//     onlineUsers.delete(req.params.id);
+//     return res.status(200).send();
+//   } catch (ex) {
+//     next(ex);
+//   }
+// };

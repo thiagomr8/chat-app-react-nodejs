@@ -7,12 +7,14 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { setAvatarRoute } from "../utils/APIRoutes";
+
 export default function SetAvatar() {
   const api = `https://api.multiavatar.com/4645646`;
   const navigate = useNavigate();
   const [avatars, setAvatars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAvatar, setSelectedAvatar] = useState(undefined);
+
   const toastOptions = {
     position: "bottom-right",
     autoClose: 8000,
@@ -28,7 +30,7 @@ export default function SetAvatar() {
 
   const setProfilePicture = async () => {
     if (selectedAvatar === undefined) {
-      toast.error("Please select an avatar", toastOptions);
+      toast.error("Por favor selecione o seu avatar", toastOptions);
     } else {
       const user = await JSON.parse(
         localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
@@ -47,7 +49,10 @@ export default function SetAvatar() {
         );
         navigate("/");
       } else {
-        toast.error("Error setting avatar. Please try again.", toastOptions);
+        toast.error(
+          "Erro ao escolher avatar, por favor tente novamente",
+          toastOptions
+        );
       }
     }
   };
@@ -73,7 +78,7 @@ export default function SetAvatar() {
       ) : (
         <Container>
           <div className="title-container">
-            <h1>Pick an Avatar as your profile picture</h1>
+            <h1>Selecione um avatar como sua foto de perfil</h1>
           </div>
           <div className="avatars">
             {avatars.map((avatar, index) => {
@@ -94,7 +99,7 @@ export default function SetAvatar() {
             })}
           </div>
           <button onClick={setProfilePicture} className="submit-btn">
-            Set as Profile Picture
+            Definir como imagem de perfil
           </button>
           <ToastContainer />
         </Container>

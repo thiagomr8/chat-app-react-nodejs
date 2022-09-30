@@ -19,6 +19,7 @@ export default function ChatContainer({ currentChat, socket }) {
       from: data._id,
       to: currentChat._id,
     });
+    console.log(response.data);
     setMessages(response.data);
   }, [currentChat]);
 
@@ -86,6 +87,7 @@ export default function ChatContainer({ currentChat, socket }) {
         <Logout />
       </div>
       <div className="chat-messages">
+        {console.log(messages)}
         {messages.map((message) => {
           return (
             <div ref={scrollRef} key={uuidv4()}>
@@ -96,7 +98,10 @@ export default function ChatContainer({ currentChat, socket }) {
               >
                 <div className="content ">
                   <p>{message.message}</p>
-                </div>
+                </div>{" "}
+                <div className="time ">
+                  <p>{new Date(message.createdAt).toLocaleString()}</p>
+                </div>{" "}
               </div>
             </div>
           );
@@ -170,11 +175,19 @@ const Container = styled.div`
       .content {
         background-color: #4f04ff21;
       }
+      .time {
+        color: #ffffff;
+        padding: 0 1rem;
+      }
     }
     .recieved {
       justify-content: flex-start;
       .content {
         background-color: #9900ff20;
+      }
+      .time {
+        padding: 0 1rem;
+        color: #ffffff;
       }
     }
   }

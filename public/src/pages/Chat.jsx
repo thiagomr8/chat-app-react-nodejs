@@ -12,8 +12,10 @@ export default function Chat() {
   const navigate = useNavigate();
   const socket = useRef();
   const [contacts, setContacts] = useState([]);
+  const [contactsOnline, setContactsOnline] = useState([]);
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentUser, setCurrentUser] = useState(undefined);
+
   useEffect(async () => {
     if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
       navigate("/login");
@@ -26,6 +28,7 @@ export default function Chat() {
     }
   }, []);
   useEffect(() => {
+    console.log("current user", currentUser);
     if (currentUser) {
       socket.current = io(host);
       socket.current.emit("add-user", currentUser._id);
@@ -42,18 +45,49 @@ export default function Chat() {
       }
     }
   }, [currentUser]);
+
+  // useEffect(() => {
+  //   socket.on("online-users", (users) => {
+  //     console.log(users);
+  //   });
+  // }, []);
+
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
   };
+
   return (
     <>
       <Container>
         <div className="container">
-          <Contacts contacts={contacts} changeChat={handleChatChange} />
-          {currentChat === undefined ? (
-            <Welcome />
+          {console.log("current chat", currentChat)}
+          {console.log(socket)}
+          {currentUser && currentUser.admin ? (
+            <>
+              <Contacts
+                contacts={contacts.filter((contact) => !contact.admin)}
+                changeChat={handleChatChange}
+              />
+              {currentChat === undefined ? (
+                <Welcome />
+              ) : (
+                <ChatContainer currentChat={currentChat} socket={socket} />
+              )}
+            </>
           ) : (
-            <ChatContainer currentChat={currentChat} socket={socket} />
+            <>
+              <>
+                <Contacts
+                  contacts={contacts.filter((contact) => contact.admin)}
+                  changeChat={handleChatChange}
+                />
+                {currentChat === undefined ? (
+                  <Welcome />
+                ) : (
+                  <ChatContainer currentChat={currentChat} socket={socket} />
+                )}
+              </>
+            </>
           )}
         </div>
       </Container>

@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { useNavigate, Link } from "react-router-dom";
-import Logo from "../assets/logo.svg";
+import azulbranco from "../assets/azulbranco.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { loginRoute } from "../utils/APIRoutes";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [values, setValues] = useState({ username: "", password: "" });
+
+  const [values, setValues] = useState({ username: "", email: "" });
+
   const toastOptions = {
     position: "bottom-right",
     autoClose: 8000,
@@ -17,6 +19,7 @@ export default function Login() {
     draggable: true,
     theme: "dark",
   };
+
   useEffect(() => {
     if (localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
       navigate("/");
@@ -28,12 +31,12 @@ export default function Login() {
   };
 
   const validateForm = () => {
-    const { username, password } = values;
+    const { username, email } = values;
     if (username === "") {
-      toast.error("Email and Password is required.", toastOptions);
+      toast.error("Usuário e email são requeridos.", toastOptions);
       return false;
-    } else if (password === "") {
-      toast.error("Email and Password is required.", toastOptions);
+    } else if (email === "") {
+      toast.error("Usuário e email são requeridos.", toastOptions);
       return false;
     }
     return true;
@@ -42,10 +45,10 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (validateForm()) {
-      const { username, password } = values;
+      const { username, email } = values;
       const { data } = await axios.post(loginRoute, {
         username,
-        password,
+        email,
       });
       if (data.status === false) {
         toast.error(data.msg, toastOptions);
@@ -66,26 +69,33 @@ export default function Login() {
       <FormContainer>
         <form action="" onSubmit={(event) => handleSubmit(event)}>
           <div className="brand">
-            <img src={Logo} alt="logo" />
-            <h1>snappy</h1>
+            <img src={azulbranco} alt="logo" />
+            <h1>Abra seu chamado</h1>
           </div>
           <input
             type="text"
-            placeholder="Username"
+            placeholder="Usuario"
             name="username"
             onChange={(e) => handleChange(e)}
             min="3"
           />
           <input
+            type="text"
+            placeholder="Email"
+            name="email"
+            onChange={(e) => handleChange(e)}
+            min="3"
+          />
+          {/* <input
             type="password"
             placeholder="Password"
             name="password"
             onChange={(e) => handleChange(e)}
-          />
-          <button type="submit">Log In</button>
-          <span>
+          /> */}
+          <button type="submit">Entrar</button>
+          {/* <span>
             Don't have an account ? <Link to="/register">Create One.</Link>
-          </span>
+          </span> */}
         </form>
       </FormContainer>
       <ToastContainer />

@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Robot from "../assets/robot.gif";
+
+import azulbranco from "../assets/azulbranco.png";
+
 export default function Welcome() {
   const [userName, setUserName] = useState("");
+
   useEffect(async () => {
     setUserName(
       await JSON.parse(
@@ -12,11 +16,11 @@ export default function Welcome() {
   }, []);
   return (
     <Container>
-      <img src={Robot} alt="" />
+      <img src={azulbranco} alt="" />
       <h1>
-        Welcome, <span>{userName}!</span>
+        Bem vindo, <span>{userName}!</span>
       </h1>
-      <h3>Please select a chat to Start messaging.</h3>
+      <h3>Selecione um bate-papo para começar a enviar mensagens.</h3>
     </Container>
   );
 }
